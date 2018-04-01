@@ -164,7 +164,7 @@ public class MainActivity extends BaseActivity {
 
     private class ConnectBT extends AsyncTask<Void, Void, Void> {
 
-        private boolean ConnectSuccess = true;
+        private boolean ConnectSuccess;
 
         @Override
         protected void onPreExecute() {
@@ -181,10 +181,7 @@ public class MainActivity extends BaseActivity {
                     BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
                     btSocket.connect();
                 }
-            } catch (
-                    IOException e)
-
-            {
+            } catch (IOException e) {
                 ConnectSuccess = false;
             }
             return null;
