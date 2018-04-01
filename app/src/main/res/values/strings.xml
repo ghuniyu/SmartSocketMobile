@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SmartSocket</string>
+    <string name="inactive">INACTIVE</string>
+    <string name="tap_to_change">Tap to Change</string>
+    <string name="socket">Socket</string>
+    <string name="statuses">Device Status : Not Connected</string>
+    <string name="please_select_paired_device">Please Select Paired Device</string>
+</resources>
