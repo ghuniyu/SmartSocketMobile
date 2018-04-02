@@ -9,8 +9,8 @@ public class Constants {
     public static final String TAG_SOC_1_NAME = "socket_name1";
     public static final String TAG_SOC_2_NAME = "socket_name2";
 
-    public static final String TAG_SOC_1_STATE = "socket_1_state";
-    public static final String TAG_SOC_2_STATE = "socket_2_state";
+    public static final String TAG_SOC_1_START = "socket_1_state";
+    public static final String TAG_SOC_2_START = "socket_2_state";
 
     public static final String TAG_NEW_DEVICE = "new_device_selected";
 

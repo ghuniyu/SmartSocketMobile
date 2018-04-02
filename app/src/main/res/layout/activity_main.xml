@@ -39,10 +39,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
+                android:contentDescription="@null"
                 android:src="@drawable/ic_socket_off"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:contentDescription="@null" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/textView"
@@ -53,6 +53,7 @@
                 android:text="@string/socket"
                 android:textColor="@color/colorText"
                 android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@+id/name"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -74,8 +75,29 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/tap_to_change"
                 android:textSize="24sp"
+                app:layout_constraintBottom_toTopOf="@+id/titleusage1"
                 app:layout_constraintStart_toStartOf="@+id/textView"
                 app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+            <TextView
+                android:id="@+id/titleusage1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Usage : "
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/name"
+                app:layout_constraintTop_toBottomOf="@+id/name" />
+
+            <TextView
+                android:id="@+id/usage1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Watt"
+                app:layout_constraintBottom_toBottomOf="@+id/titleusage1"
+                app:layout_constraintStart_toEndOf="@+id/titleusage1" />
 
 
         </android.support.constraint.ConstraintLayout>
@@ -101,10 +123,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
+                android:contentDescription="@null"
                 android:src="@drawable/ic_socket_off"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:contentDescription="@null" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/textView2"
@@ -115,6 +137,7 @@
                 android:text="@string/socket"
                 android:textColor="@color/colorText"
                 android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@+id/name2"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -136,8 +159,29 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/tap_to_change"
                 android:textSize="24sp"
+                app:layout_constraintBottom_toTopOf="@+id/titleusage2"
                 app:layout_constraintStart_toStartOf="@+id/textView2"
                 app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+            <TextView
+                android:id="@+id/titleusage2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Usage : "
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/name2"
+                app:layout_constraintTop_toBottomOf="@+id/name2" />
+
+            <TextView
+                android:id="@+id/usage2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Watt"
+                app:layout_constraintBottom_toBottomOf="@+id/titleusage2"
+                app:layout_constraintStart_toEndOf="@+id/titleusage2" />
 
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>

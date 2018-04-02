@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -47,7 +48,16 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.status_2)
     TextView status2;
 
+    @BindView(R.id.usage1)
+    TextView tvUsage1;
+
+    @BindView(R.id.usage2)
+    TextView tvUsage2;
+
     ProgressDialog progress;
+
+    double usage1 = 0;
+    double usage2 = 0;
 
     BluetoothSocket btSocket = null;
     BluetoothAdapter myBluetooth = null;
@@ -162,89 +172,41 @@ public class MainActivity extends BaseActivity {
         return false;
     }
 
-    /*private class ConnectBT extends AsyncTask<Void, Void, Void> {
-
-        private boolean ConnectSuccess;
-
-        @Override
-        protected void onPreExecute() {
-            progress = ProgressDialog.show(MainActivity.this, "Connecting...", "Please wait...");  //show a progress dialog
-        }
-
-        @Override
-        protected Void doInBackground(Void... devices) {
-            try {
-                if (btSocket == null || !isBtConnected) {
-                    myBluetooth = BluetoothAdapter.getDefaultAdapter();
-                    BluetoothDevice dispositivo = myBluetooth.getRemoteDevice(Hawk.get(Constants.TAG_BT_ADD, ""));
-                    btSocket = dispositivo.createInsecureRfcommSocketToServiceRecord(Constants.TAG_UUID);
-                    BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-                    btSocket.connect();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                ConnectSuccess = false;
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-
-            if (!ConnectSuccess) {
-                deviceInfo.setText("Device Status : Connection Failed");
-                finish();
-            } else {
-                isBtConnected = true;
-                checkStatus();
-            }
-            progress.dismiss();
-        }
-    }*/
-
     private class ConnectBT extends AsyncTask<Void, Void, Void>  // UI thread
     {
         private boolean ConnectSuccess = true; //if it's here, it's almost connected
 
         @Override
-        protected void onPreExecute()
-        {
+        protected void onPreExecute() {
             progress = ProgressDialog.show(MainActivity.this, "Connecting...", "Please wait!!!");  //show a progress dialog
         }
 
         @Override
         protected Void doInBackground(Void... devices) //while the progress dialog is shown, the connection is done in background
         {
-            try
-            {
-                if (btSocket == null || !isBtConnected)
-                {
+            try {
+                if (btSocket == null || !isBtConnected) {
                     myBluetooth = BluetoothAdapter.getDefaultAdapter();//get the mobile bluetooth device
                     BluetoothDevice dispositivo = myBluetooth.getRemoteDevice(Hawk.get(Constants.TAG_BT_ADD, "BLANK"));//connects to the device's address and checks if it's available
                     btSocket = dispositivo.createInsecureRfcommSocketToServiceRecord(Constants.TAG_UUID);//create a RFCOMM (SPP) connection
                     BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
                     btSocket.connect();//start connection
                 }
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 ConnectSuccess = false;//if the try failed, you can check the exception here
             }
             return null;
         }
+
         @Override
         protected void onPostExecute(Void result) //after the doInBackground, it checks if everything went fine
         {
             super.onPostExecute(result);
 
-            if (!ConnectSuccess)
-            {
+            if (!ConnectSuccess) {
                 Toast.makeText(MainActivity.this, "Connection Failed. Is it a SPP Bluetooth? Try again.", Toast.LENGTH_SHORT).show();
                 finish();
-            }
-            else
-            {
+            } else {
                 Toast.makeText(MainActivity.this, "Connection Successful", Toast.LENGTH_SHORT).show();
                 isBtConnected = true;
                 checkStatus();
@@ -252,7 +214,6 @@ public class MainActivity extends BaseActivity {
             progress.dismiss();
         }
     }
-
 
     void switchSocket(String cmd) {
         if (btSocket != null) {
@@ -266,22 +227,32 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.btn_1)
     void socket1() {
+        long now = System.currentTimeMillis();
         if (s1_isOn) {
             switchSocket("#1LOW#");
-        } else
+            usage1 += countEnergy(2, now - Hawk.get(Constants.TAG_SOC_1_START, now));
+        } else {
             switchSocket("#1HIGH#");
+            Hawk.put(Constants.TAG_SOC_1_START, System.currentTimeMillis());
+        }
         s1_isOn = !s1_isOn;
         notifyIcon(btn1, status1, s1_isOn);
+        tvUsage1.setText(String.format("%,.04f kWh (Rp%,.02f)", usage1, usage1 * 1467.28));
     }
 
     @OnClick(R.id.btn_2)
     void socket2() {
+        long now = System.currentTimeMillis();
         if (s2_isOn) {
             switchSocket("#2LOW#");
-        } else
+            usage2 += countEnergy(2.5, now - Hawk.get(Constants.TAG_SOC_2_START, now));
+        } else {
             switchSocket("#2HIGH#");
+            Hawk.put(Constants.TAG_SOC_2_START, System.currentTimeMillis());
+        }
         s2_isOn = !s2_isOn;
         notifyIcon(btn2, status2, s2_isOn);
+        tvUsage2.setText(String.format("%,.04f kWh (Rp%,.02f)", usage2, usage2 * 1467.28));
     }
 
     void notifyIcon(ImageView view, TextView title, boolean isON) {
@@ -294,5 +265,19 @@ public class MainActivity extends BaseActivity {
             title.setText("INACTIVE");
             title.setTextColor(ContextCompat.getColor(this, R.color.colorTextGrey));
         }
+    }
+
+    private double countEnergy(double i, long millis) {
+        return (220 * i * (millis / 1000.0)) / 2.278 * Math.pow(10, -7);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            Toast.makeText(this, "New Device Plugged", Toast.LENGTH_SHORT).show();
+        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            Toast.makeText(this, "Device Unplugged", Toast.LENGTH_SHORT).show();
+        }
+        return true;
     }
 }
