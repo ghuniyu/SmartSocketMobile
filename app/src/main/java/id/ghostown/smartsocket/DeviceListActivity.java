@@ -62,7 +62,6 @@ public class DeviceListActivity extends BaseActivity {
                 String address = info.substring(info.length() - 17);
                 Hawk.put(Constants.TAG_BT_ADD, address);
                 Hawk.put(Constants.TAG_BT_INF, "Connected to " + info.substring(0, info.length() - 18));
-                Toast.makeText(DeviceListActivity.this, "Device Address : " + address, Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(DeviceListActivity.this, MainActivity.class).putExtra(Constants.TAG_NEW_DEVICE, true));
             }
         });

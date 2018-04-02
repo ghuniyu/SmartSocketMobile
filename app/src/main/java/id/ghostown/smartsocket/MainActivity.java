@@ -162,7 +162,7 @@ public class MainActivity extends BaseActivity {
         return false;
     }
 
-    private class ConnectBT extends AsyncTask<Void, Void, Void> {
+    /*private class ConnectBT extends AsyncTask<Void, Void, Void> {
 
         private boolean ConnectSuccess;
 
@@ -182,6 +182,7 @@ public class MainActivity extends BaseActivity {
                     btSocket.connect();
                 }
             } catch (IOException e) {
+                e.printStackTrace();
                 ConnectSuccess = false;
             }
             return null;
@@ -200,7 +201,58 @@ public class MainActivity extends BaseActivity {
             }
             progress.dismiss();
         }
+    }*/
+
+    private class ConnectBT extends AsyncTask<Void, Void, Void>  // UI thread
+    {
+        private boolean ConnectSuccess = true; //if it's here, it's almost connected
+
+        @Override
+        protected void onPreExecute()
+        {
+            progress = ProgressDialog.show(MainActivity.this, "Connecting...", "Please wait!!!");  //show a progress dialog
+        }
+
+        @Override
+        protected Void doInBackground(Void... devices) //while the progress dialog is shown, the connection is done in background
+        {
+            try
+            {
+                if (btSocket == null || !isBtConnected)
+                {
+                    myBluetooth = BluetoothAdapter.getDefaultAdapter();//get the mobile bluetooth device
+                    BluetoothDevice dispositivo = myBluetooth.getRemoteDevice(Hawk.get(Constants.TAG_BT_ADD, "BLANK"));//connects to the device's address and checks if it's available
+                    btSocket = dispositivo.createInsecureRfcommSocketToServiceRecord(Constants.TAG_UUID);//create a RFCOMM (SPP) connection
+                    BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+                    btSocket.connect();//start connection
+                }
+            }
+            catch (IOException e)
+            {
+                ConnectSuccess = false;//if the try failed, you can check the exception here
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void result) //after the doInBackground, it checks if everything went fine
+        {
+            super.onPostExecute(result);
+
+            if (!ConnectSuccess)
+            {
+                Toast.makeText(MainActivity.this, "Connection Failed. Is it a SPP Bluetooth? Try again.", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            else
+            {
+                Toast.makeText(MainActivity.this, "Connection Successful", Toast.LENGTH_SHORT).show();
+                isBtConnected = true;
+                checkStatus();
+            }
+            progress.dismiss();
+        }
     }
+
 
     void switchSocket(String cmd) {
         if (btSocket != null) {
