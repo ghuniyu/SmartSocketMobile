@@ -44,27 +44,32 @@ public class DeviceListActivity extends BaseActivity {
             }
         }
 
-        pairedDevices = mBluetooth.getBondedDevices();
-        ArrayList devices = new ArrayList();
+        try {
+            pairedDevices = mBluetooth.getBondedDevices();
+            ArrayList devices = new ArrayList();
 
-        if (pairedDevices.size() > 0) {
-            for (BluetoothDevice bt : pairedDevices) {
-                devices.add(String.format("%s\n%s", bt.getName(), bt.getAddress()));
+            if (pairedDevices.size() > 0) {
+                for (BluetoothDevice bt : pairedDevices) {
+                    devices.add(String.format("%s\n%s", bt.getName(), bt.getAddress()));
+                }
             }
+
+
+            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, devices);
+            listDevice.setAdapter(adapter);
+            listDevice.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String info = ((TextView) view).getText().toString();
+                    String address = info.substring(info.length() - 17);
+                    Hawk.put(Constants.TAG_BT_ADD, address);
+                    Hawk.put(Constants.TAG_BT_INF, "Connected to " + info.substring(0, info.length() - 18));
+                    startActivity(new Intent(DeviceListActivity.this, MainActivity.class).putExtra(Constants.TAG_NEW_DEVICE, true));
+                }
+            });
+        } catch (NullPointerException e) {
+            Toast.makeText(this, "No Bluetooth Paired yet\nYou Should Pair Bluetooth Device First", Toast.LENGTH_SHORT).show();
         }
-
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, devices);
-        listDevice.setAdapter(adapter);
-        listDevice.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String info = ((TextView) view).getText().toString();
-                String address = info.substring(info.length() - 17);
-                Hawk.put(Constants.TAG_BT_ADD, address);
-                Hawk.put(Constants.TAG_BT_INF, "Connected to " + info.substring(0, info.length() - 18));
-                startActivity(new Intent(DeviceListActivity.this, MainActivity.class).putExtra(Constants.TAG_NEW_DEVICE, true));
-            }
-        });
     }
 
     @Override
